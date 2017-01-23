@@ -1,0 +1,110 @@
+-----NANO------
+ctrl+A = start of line
+ctrl+E = end of line
+OR
+fn+RIGHT = start of line
+fn+LEFT = end of line
+fn+UP = top of Documents
+fn+DOWN = end of doc
+ctrl+space = next word
+option+space = last word
+
+ctr+^ = select
+ctr+k = cut
+crt+u = paste
+option+^ = copy
+
+Alias in place:
+alias commit="git commit -am"		//requires the commit message as an arguemnt
+alias push="git push origin master"	//pushes to master
+alias c="nano commands.txt"		//just to open this file quickly
+alias C="cd /Users/Richard/GoogleDrive/Documents/College/Eng_2016-2017/shell"	//brings me to this dir quickly 
+
+Alias that I tried
+alias listsource="ls *.c *.h"		//lists source files - any file ending in .c or .h
+
+---------Commands----------
+--Files--
+ls					//lists all files in the current dir
+ls -R					//lists all files in current dir recursivly
+rmdir dirname				//removes an EMPTY dir
+rm -r dirname				//removes dir and all things it containts
+rm temp.c				//removed the file temp.c
+cd ..					//moves up a dir
+mkdir ShellStuff			//makes a dir called "ShellStuff"
+touch commands.txt			//creates a blank file called commands.txt
+nano commands.txt			//makes a text file called "commands.txt"
+mv file1.txt /home/richie/		//moves file1.txt to /home/richie/
+cp file1.txt /home/richie/		//copies file1.txt to /home/richie/
+cp -r /home/richie/ /home/backup/	//recursivly copies all files and dirs to new location		
+ln -s file1.txt /home/richie/		//creates a sybolic link to file1.txt in /home/richie/
+chmod +x script.sh			//adds executable permission to script.sh
+chmod u+x script.sh			//also does above.. but only the owner of the file can excute
+
+--Shell--
+Any alias or vars put into ~/.bash_profile will be persistent
+
+echo $SHELL				//returns shell in use
+~/.bash_profile				//the bash config file in use
+export JAVA_HOME=$(/usr/java)		//IN BASH PROFILE sets an enviromental variable called JAVA_HOME to the value of /usr/java
+export PATH=$PATH:~/bin			//IN COMMAND LINE as above but temp
+set					//complete list of shell variables
+
+--------
+----scripting----
+var = "$1"				//sets var to the first arugement
+echo "$var"				//echos the first arguemnt - note that var is derefanced with the $
+./script.sh stuff is fun		//1st arg = stuff; 2nd = is; 3rd = fun
+./script.sh "Stuff is fun"		//1st arg = stuff is fun;
+var = "how to \"use\" quotes"		//how to use quotes in a string
+--READ--
+read VAR1 VAR2				//reads the line and breaks it up in to variables based on the space
+read VAR				//will read in the line and not split it in to variables 
+IFS = "q" read VAR1 VAR2		//reads the line and breaks it up in to varaibles based on the char "q"
+-note-	
+read will read each variable based on IFS(or space as befault) untill it has filled the number of requested vars, 
+then it will just lump everything left in to the last var
+--WRITE--
+cat > myprogram.c << EOF		//will print all of the text below this command to the file myprogram.c until it encouters EOF
+--File Redirection--
+echo "a single line of text" > MyFile	//writes a single line of text to a file
+echo "a single line of text" >> MyFile	//apends a line to the text file
+ls . THISISNOTAFILE >& filelistwitherrors 	//creats a file called filelistwitherror and prints a list of files in the directory and the error message about "THISISNOTAFILE"
+-note-
+in the above statement the & from the >& mearges the output and directs both to the new file ... also works with >>
+ALSO - this is not compleltly portable, may not work with all shells. 
+becuase a file descriptor number is not after the >& command
+"ls . THISISNOTAFILE > filelistwitherrors 2>&1" is portable
+ls . THISISNOTAFILE > filelistwitherrors 2>&1 		//directs the stdout(file descriptor 1) of ls in to a file and 
+							//then combines this file with the stderror(file descriptor 2) 
+							//and directs it to std out
+--PIPING--
+ls | grep 'txt'			//ls lists all files in dir to its stdout,
+				//they're piped to greps stdin,
+				//grep lists all lines containing txt to its stdout -> so it prints 
+ls -l NOFILE 2>&1 | grep 'txt'	//combines the stderror(2) into the stdout(1) and passes to stdin of grep
+echo "an error message" 1>&2	//sends the stdout(1) of echo to the stderror(2) of your script
+
+	--NOTE--
+	the 1>&2 must be the last command in a sequence ( after any other reidrects )
+	-eg- 	
+	echo "an error message" > errorfile 1>&2 	//this will output the stderror of echo and the message to "errorfile" 
+	echo "an error message" 1>&2 > errofile				//this will only outout the message to the file, and if this snippit is piped it will only pipe the stderror
+--CONDITIONALS--
+man \\[				//returns the man for the "test" executable - this is used to compare ints, strings, files etc for if statements in shell scripts
+-eg- 
+if [ "foo" = "$var" ] ; then		//the [] will eval the statment within 
+echo "$var"
+fi
+-NOTE-
+there MUST be a space on either side of the "=" this seperates a test from an assignment
+there MUST be a space on either side of the "[" and "]" or a syntax error will occur - the first "[" is a command and expects a "]" as the last argument
+the quotation marks are requied to enure the var will work even it is empty or contains spaces
+
+while [ "foo" = "$var" ] ; do
+echo "$var";
+done
+
+break 2 		//breaks out of this loop and the one above it
+continue 2		//skips the remainder of this loop and the one above it
+
